@@ -1,0 +1,593 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kalkulator Grosir Pro v4.0 (Ultimate)</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <style>
+        :root {
+            --bg-color: #f3f4f6;
+            --card-bg: #ffffff;
+            --text-main: #1f2937;
+            --text-muted: #6b7280;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --success-hover: #059669;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --border-color: #e5e7eb;
+            --input-bg: #f9fafb;
+            --accent-bg: #eff6ff;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #111827;
+            --card-bg: #1f2937;
+            --text-main: #f9fafb;
+            --text-muted: #9ca3af;
+            --primary: #3b82f6;
+            --primary-hover: #60a5fa;
+            --success: #34d399;
+            --success-hover: #10b981;
+            --danger: #f87171;
+            --danger-hover: #ef4444;
+            --border-color: #374151;
+            --input-bg: #111827;
+            --accent-bg: #1e3a8a;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            transition: background-color 0.2s, color 0.2s;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 1.5rem;
+            min-height: 100vh;
+        }
+
+        .container, .history-container {
+            width: 100%;
+            max-width: 850px;
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.04);
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--border-color);
+            padding-bottom: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .version-badge {
+            background-color: #10b981;
+            color: white;
+            font-size: 0.8rem;
+            padding: 0.25rem 0.6rem;
+            border-radius: 20px;
+            vertical-align: middle;
+            margin-left: 0.5rem;
+        }
+
+        .theme-toggle {
+            background: var(--input-bg);
+            border: 1px solid var(--border-color);
+            color: var(--text-main);
+            padding: 0.6rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+        }
+
+        .form-row {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-bottom: 1rem;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            flex: 1;
+            min-width: 200px;
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 0.85rem;
+            font-size: 1.05rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--input-bg);
+            color: var(--text-main);
+            outline: none;
+        }
+
+        input:focus, select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
+        }
+
+        .multipliers-section {
+            background-color: var(--bg-color);
+            padding: 1.25rem;
+            border-radius: 12px;
+            border: 1px solid var(--border-color);
+            margin-bottom: 1rem;
+        }
+
+        .multiplier-row {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.75rem;
+            align-items: center;
+        }
+
+        .btn {
+            padding: 0.85rem 1.25rem;
+            border: none;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .btn-add {
+            background-color: transparent;
+            color: var(--primary);
+            border: 2px dashed var(--primary);
+            width: 100%;
+        }
+
+        .btn-remove {
+            background-color: var(--danger);
+            color: white;
+            padding: 0.85rem;
+        }
+
+        .btn-calculate {
+            background-color: var(--primary);
+            color: white;
+            font-size: 1.15rem;
+            width: 100%;
+        }
+
+        .btn-calculate:hover { background-color: var(--primary-hover); }
+
+        .dashboard-summary {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .summary-card {
+            flex: 1;
+            background-color: var(--accent-bg);
+            border: 1px solid var(--primary);
+            padding: 1rem;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .summary-card h4 { font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.25rem; }
+        .summary-card p { font-size: 1.5rem; font-weight: bold; color: var(--text-main); }
+
+        .result-box {
+            background-color: var(--input-bg);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 1.25rem;
+            text-align: center;
+            display: none;
+            margin-top: 1rem;
+        }
+        
+        .result-box.active { display: block; }
+
+        .result-grid {
+            display: flex;
+            justify-content: space-around;
+            margin-top: 0.75rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .price-item .price {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+
+        .price-item .price.sell { color: var(--success); }
+
+        .history-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .search-bar {
+            flex: 1;
+            min-width: 250px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .history-card {
+            background-color: var(--input-bg);
+            border: 1px solid var(--border-color);
+            padding: 1rem;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .history-info {
+            flex: 1;
+        }
+
+        .history-prices { 
+            text-align: right; 
+            min-width: 160px; 
+        }
+
+        .btn-inline-delete {
+            background-color: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 0.4rem 0.75rem;
+            font-size: 0.85rem;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 0.5rem;
+        }
+
+        .btn-inline-delete:hover {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        /* PRINT STYLING (Optimalisasi Cetak Nota) */
+        @media print {
+            body { background-color: #ffffff; color: #000000; padding: 0; }
+            .container, .history-controls, .theme-toggle, .btn-inline-delete, .multipliers-section, .btn-calculate {
+                display: none !important;
+            }
+            .history-container {
+                width: 100% !important;
+                max-width: 100% !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+                margin: 0 !important;
+            }
+            .history-list { max-height: none !important; overflow: visible !important; }
+            .history-card { border-bottom: 1px solid #000000 !important; border-radius: 0; background: transparent !important; padding: 0.75rem 0; }
+            .summary-card { border: 1px solid #000000 !important; background: transparent !important; }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <h2>Kalkulator Grosir <span class="version-badge">v4.0-Ultimate</span></h2>
+            <button class="theme-toggle" onclick="toggleTheme()">🌓 Tema</button>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Nama Barang</label>
+                <input type="text" id="itemName" placeholder="Contoh: Teh Sisri">
+            </div>
+            <div class="form-group">
+                <label>Harga Beli Total (Rp)</label>
+                <input type="number" id="totalPrice" placeholder="Contoh: 46000" min="0">
+            </div>
+            <div class="form-group">
+                <label>Diskon / Potongan Toko (Rp)</label>
+                <input type="number" id="discountPrice" placeholder="Contoh: 2000 (Jika ada)" min="0" value="0">
+            </div>
+        </div>
+
+        <div class="multipliers-section">
+            <h3 style="margin-bottom: 0.75rem; font-size: 1.1rem;">Rincian Isi Kemasan</h3>
+            <div id="multiplierContainer">
+                <div class="multiplier-row">
+                    <input type="number" class="qty-input" placeholder="Jumlah (Misal: 12)" min="1">
+                    <input type="text" class="unit-input" placeholder="Sebutan (Misal: Renceng)">
+                </div>
+                <div class="multiplier-row">
+                    <input type="number" class="qty-input" placeholder="Jumlah (Misal: 10)" min="1">
+                    <input type="text" class="unit-input" placeholder="Sebutan (Misal: Sachet)">
+                    <button class="btn btn-remove" onclick="removeRow(this)">X</button>
+                </div>
+            </div>
+            <button class="btn btn-add" onclick="addRow()">+ Tambah Rincian Isi</button>
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label>Target Keuntungan (%)</label>
+                <input type="number" id="marginProfit" placeholder="Contoh: 20" min="0" value="0">
+            </div>
+            <div class="form-group">
+                <label>Opsi Pembulatan Harga Jual</label>
+                <select id="roundingType">
+                    <option value="none">Tanpa Pembulatan (Asli)</option>
+                    <option value="100">Bulatkan ke Atas Kelipatan Rp 100</option>
+                    <option value="500" selected>Bulatkan ke Atas Kelipatan Rp 500</option>
+                    <option value="1000">Bulatkan ke Atas Kelipatan Rp 1.000</option>
+                </select>
+            </div>
+        </div>
+
+        <button class="btn btn-calculate" onclick="calculateCost()">Hitung & Simpan Barang</button>
+
+        <div id="resultBox" class="result-box">
+            <h3 id="resultTitle">Hasil Perhitungan</h3>
+            <p id="resultPath" style="color: var(--text-muted); font-size: 0.95rem; margin-top: 0.25rem;"></p>
+            <div class="result-grid">
+                <div class="price-item">
+                    <h4 style="color: var(--text-muted); font-size: 0.9rem;">Harga Modal / Satuan</h4>
+                    <div class="price" id="resultModal">Rp 0</div>
+                </div>
+                <div class="price-item">
+                    <h4 style="color: var(--text-muted); font-size: 0.9rem;">Saran Harga Jual</h4>
+                    <div class="price sell" id="resultJual">Rp 0</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="history-container">
+        <div class="dashboard-summary">
+            <div class="summary-card">
+                <h4>Total Jenis Barang (SKU)</h4>
+                <p id="summarySKU">0 Barang</p>
+            </div>
+            <div class="summary-card">
+                <h4>Estimasi Total Pembayaran (Net)</h4>
+                <p id="summarySpend" style="color: var(--success);">Rp 0</p>
+            </div>
+        </div>
+
+        <div class="history-controls">
+            <input type="text" id="searchHistory" class="search-bar" placeholder="🔍 Cari nama barang di riwayat..." oninput="filterHistory()">
+            <div style="display: flex; gap: 0.5rem;">
+                <button class="btn" style="background-color: transparent; color: var(--danger); border:1px solid var(--danger); padding:0.6rem 1rem;" onclick="clearHistory()">Hapus Semua</button>
+                <button class="btn" style="background-color: #6b7280; color: white; padding:0.6rem 1rem;" onclick="window.print()">🖨️ Cetak Nota</button>
+                <button class="btn" style="background-color: var(--success); color: white; padding:0.6rem 1rem;" onclick="exportToCSV()">📥 Ekspor Excel</button>
+            </div>
+        </div>
+
+        <div class="history-list" id="historyList"></div>
+    </div>
+
+    <script>
+        let historyData = JSON.parse(localStorage.getItem('grosirDataV4')) || [];
+
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.getAttribute('data-theme') === 'dark') {
+                html.removeAttribute('data-theme');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.setAttribute('data-theme', 'dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+        if (localStorage.getItem('theme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
+
+        function addRow() {
+            const container = document.getElementById('multiplierContainer');
+            const row = document.createElement('div');
+            row.className = 'multiplier-row';
+            row.innerHTML = `
+                <input type="number" class="qty-input" placeholder="Jumlah" min="1">
+                <input type="text" class="unit-input" placeholder="Sebutan">
+                <button class="btn btn-remove" onclick="removeRow(this)">X</button>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeRow(btn) { btn.parentElement.remove(); }
+
+        function formatRupiah(number) {
+            return new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', minimumFractionDigits: 0 }).format(number);
+        }
+
+        function roundUpPrice(price, type) {
+            if (type === 'none' || price === 0) return price;
+            const factor = parseInt(type);
+            return Math.ceil(price / factor) * factor;
+        }
+
+        function calculateCost() {
+            const itemName = document.getElementById('itemName').value.trim() || "Barang Tanpa Nama";
+            const totalPrice = parseFloat(document.getElementById('totalPrice').value);
+            const discountPrice = parseFloat(document.getElementById('discountPrice').value) || 0;
+            const margin = parseFloat(document.getElementById('marginProfit').value) || 0;
+            const roundingType = document.getElementById('roundingType').value;
+            
+            if (!totalPrice || isNaN(totalPrice)) {
+                alert("Masukkan Harga Beli Total yang valid.");
+                return;
+            }
+
+            const rows = document.querySelectorAll('.multiplier-row');
+            let totalQty = 1;
+            let pathTexts = [];
+            let lastUnit = "Pcs";
+
+            rows.forEach(row => {
+                const qty = parseFloat(row.querySelector('.qty-input').value);
+                const unit = row.querySelector('.unit-input').value.trim() || "Unit";
+                if (qty) {
+                    totalQty *= qty;
+                    pathTexts.push(`${qty} ${unit}`);
+                    lastUnit = unit;
+                }
+            });
+
+            // Perhitungan dengan Diskon Toko
+            const netPrice = totalPrice - discountPrice;
+            const unitPrice = netPrice / totalQty;
+            let rawSellingPrice = unitPrice + (unitPrice * (margin / 100));
+            let finalSellingPrice = roundUpPrice(rawSellingPrice, roundingType);
+
+            document.getElementById('resultTitle').innerText = `${itemName} (per ${lastUnit})`;
+            document.getElementById('resultPath').innerText = `Total isi: ${totalQty} (${pathTexts.join(' x ')}) ${discountPrice > 0 ? '[Diskon Terpotong]' : ''}`;
+            document.getElementById('resultModal').innerText = formatRupiah(unitPrice);
+            document.getElementById('resultJual').innerText = formatRupiah(finalSellingPrice);
+            document.getElementById('resultBox').classList.add('active');
+
+            const record = {
+                id: Date.now(),
+                date: new Date().toLocaleString('id-ID', { dateStyle: 'short', timeStyle: 'short' }),
+                name: itemName,
+                path: `${totalQty} (${pathTexts.join('x')})`,
+                totalPrice: totalPrice,
+                discountPrice: discountPrice,
+                netPrice: netPrice,
+                modal: unitPrice,
+                jual: finalSellingPrice,
+                margin: margin
+            };
+            
+            historyData.unshift(record);
+            localStorage.setItem('grosirDataV4', JSON.stringify(historyData));
+            
+            // Clean up inputs
+            document.getElementById('itemName').value = '';
+            document.getElementById('totalPrice').value = '';
+            document.getElementById('discountPrice').value = '0';
+            
+            renderHistory();
+            updateDashboard();
+            document.getElementById('itemName').focus();
+        }
+
+        function updateDashboard() {
+            const totalItems = historyData.length;
+            const totalSpend = historyData.reduce((sum, item) => sum + item.netPrice, 0);
+            
+            document.getElementById('summarySKU').innerText = `${totalItems} Barang`;
+            document.getElementById('summarySpend').innerText = formatRupiah(totalSpend);
+        }
+
+        // Fitur Baru: Menghapus ITEM TERTENTU berdasarkan ID
+        function deleteItem(id) {
+            if(confirm("Hapus barang ini dari daftar?")) {
+                historyData = historyData.filter(item => item.id !== id);
+                localStorage.setItem('grosirDataV4', JSON.stringify(historyData));
+                renderHistory();
+                updateDashboard();
+            }
+        }
+
+        function renderHistory(filterText = '') {
+            const container = document.getElementById('historyList');
+            container.innerHTML = '';
+            
+            const filteredData = historyData.filter(item => 
+                item.name.toLowerCase().includes(filterText.toLowerCase())
+            );
+
+            if(filteredData.length === 0) {
+                container.innerHTML = '<p style="text-align:center; color:var(--text-muted); padding:1rem;">Tidak ada riwayat barang.</p>';
+                return;
+            }
+
+            filteredData.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'history-card';
+                card.innerHTML = `
+                    <div class="history-info">
+                        <strong style="font-size:1.05rem; color:var(--primary);">${item.name}</strong>
+                        <p style="font-size:0.85rem; color:var(--text-muted);">${item.date} | Isi: ${item.path}</p>
+                        <p style="font-size:0.85rem;">Beli: ${formatRupiah(item.totalPrice)} ${item.discountPrice > 0 ? `(Disc: -${formatRupiah(item.discountPrice)})` : ''}</p>
+                        <button class="btn-inline-delete" onclick="deleteItem(${item.id})">🗑️ Hapus Item</button>
+                    </div>
+                    <div class="history-prices">
+                        <p style="font-size:0.9rem;">Modal: <strong>${formatRupiah(item.modal)}</strong></p>
+                        <p style="color:var(--success); font-size:0.95rem;">Jual (${item.margin}%): <strong>${formatRupiah(item.jual)}</strong></p>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        function filterHistory() {
+            const text = document.getElementById('searchHistory').value;
+            renderHistory(text);
+        }
+
+        function clearHistory() {
+            if(confirm("Hapus seluruh daftar belanjaan di riwayat?")) {
+                historyData = [];
+                localStorage.removeItem('grosirDataV4');
+                renderHistory();
+                updateDashboard();
+            }
+        }
+
+        function exportToCSV() {
+            if(historyData.length === 0) { alert("Daftar riwayat kosong."); return; }
+            let csvContent = "data:text/csv;charset=utf-8,﻿";
+            csvContent += "Tanggal,Nama Barang,Harga Kotor,Diskon Toko,Harga Bersih (Net),Total Isi,Modal Satuan,Margin,Harga Jual
+";
+            
+            historyData.forEach(row => {
+                csvContent += `"${row.date}","${row.name}","${row.totalPrice}","${row.discountPrice}","${row.netPrice}","${row.path}","${Math.round(row.modal)}","${row.margin}%","${row.jual}"
+`;
+            });
+
+            const encodedUri = encodeURI(csvContent);
+            const link = document.createElement("a");
+            link.setAttribute("href", encodedUri);
+            link.setAttribute("download", `Rekap_Grosir_V4_${new Date().toISOString().slice(0,10)}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }
+
+        renderHistory();
+        updateDashboard();
+    </script>
+</body>
+</html>
